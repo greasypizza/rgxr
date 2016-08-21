@@ -1,6 +1,7 @@
 #rgxr
 Generate random passwords matching a regular expression
 
-Usage: rgxr output_length regex
+I wrote this because some bank (schwab?) had weirdo requirements like "you can't
+have two digits in a row"
 
-Note: You will likely want to include "^" and "$" to match the start and end (respectively) of the string.
+I re-wrote it in c++ because ¯\_(ツ)_/¯
