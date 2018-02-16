@@ -1,9 +1,8 @@
-
 cc_binary(
-  name = "rgxr",
-  srcs = ["main.cc"],
-  deps = [
-    "//external:gflags",
-    "//external:re2",
-  ],
+    name = "rgxr",
+    srcs = ["main.cc"],
+    deps = [
+        "//external:gflags",
+        "//external:re2",
+    ],
 )
