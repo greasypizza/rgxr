@@ -2,7 +2,9 @@ cc_binary(
     name = "rgxr",
     srcs = ["main.cc"],
     deps = [
-        "//external:gflags",
-        "//external:re2",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/flags:parse",
+        "@com_google_absl//absl/flags:usage",
+        "@com_googlesource_code_re2//:re2",
     ],
 )
