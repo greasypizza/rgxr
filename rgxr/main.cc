@@ -1,10 +1,11 @@
 #include <iostream>
-#include <random>
 #include <string>
 
 #include "absl/flags/flag.h"
 #include "absl/flags/parse.h"
 #include "absl/flags/usage.h"
+#include "absl/random/uniform_int_distribution.h"
+#include "absl/random/random.h"
 #include "re2/re2.h"
 
 ABSL_FLAG(int, len, 15, "Length of generated password");
@@ -35,12 +36,12 @@ int main(int argc, char **argv) {
   }
   std::string result(len, kMinPrintable);
 
-  std::random_device rd;
-  std::uniform_int_distribution<char> dist(kMinPrintable, kMaxPrintable);
+  absl::BitGen bit_gen;
+  absl::uniform_int_distribution<char> printable_characters(kMinPrintable, kMaxPrintable);
 
   do {
     for (char& c : result) {
-      c = dist(rd);
+      c = printable_characters(bit_gen);
     }
   } while (!RE2::FullMatch(result, expr));
 
