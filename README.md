@@ -1,4 +1,4 @@
-#rgxr
+# rgxr
 Generate random passwords matching a regular expression
 
 I wrote this because some bank (schwab?) had weirdo requirements like "you can't
