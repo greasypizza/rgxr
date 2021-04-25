@@ -7,13 +7,6 @@ import hashlib
 import json
 import urllib3
 
-HTTP_ARCHIVE_TEMPLATE = """http_archive(
-    name = "{}",
-    urls = ["{}"],  # {}
-    strip_prefix = "{}-{}",
-    sha256 = "{}",
-)"""
-
 _HEADERS = {'User-Agent': 'Workspace Updater'}
 
 http = urllib3.PoolManager()
@@ -33,30 +26,40 @@ class GitHubProject(ExternalDependency):
 
     def workspace_rule(self):
         # https://developer.github.com/v3/repos/commits/
-        url = 'https://api.github.com/repos/{}/{}/commits/{}'.format(
-                project.owner, project.repo, project.branch)
+        url = f'https://api.github.com/repos/{self.owner}/{self.repo}/commits/{self.branch}'
         request = http.request('GET', url, headers=_HEADERS)
         response = json.loads(request.data.decode('utf-8'))
         commit = response["sha"]
         date = response["commit"]["committer"]["date"]
 
-        url = 'https://github.com/{}/{}/archive/{}.zip'.format(
-            project.owner, project.repo, commit)
+        url = f'https://github.com/{self.owner}/{self.repo}/archive/{commit}.zip'
         request = http.request('GET', url, headers=_HEADERS)
         sha256 = hashlib.sha256(request.data).hexdigest()
-        return HTTP_ARCHIVE_TEMPLATE.format(
-            project.name, url, date, project.repo, commit, sha256)
+        return f"""
+http_archive(
+    name = "{self.name}",
+    sha256 = "{sha256}",
+    strip_prefix = "{self.repo}-{commit}",
+    urls = ["{url}"],  # {date}
+)"""
 
 
 PROJECTS = [
     GitHubProject(
-        'com_google_absl_oss_federation',
-        'abseil', 'federation-head', 'master'),
-    GitHubProject('com_googlesource_code_re2', 'google', 're2', 'abseil'),
+        name='com_google_absl_oss_federation',
+        owner='abseil',
+        repo='federation-head',
+        branch='master',
+    ),
+    GitHubProject(
+        name='com_googlesource_code_re2',
+        owner='google',
+        repo='re2',
+        branch='abseil',
+    ),
 ]
 
+print("********** INSERT THIS INTO YOUR WORKSPACE: *****************")
 for project in PROJECTS:
-    retVal = project.workspace_rule()
-    print ("********** INSERT THIS INTO YOUR WORKSPACE: *****************")
-    print (retVal)
-    print ("*********************************")
+    print(project.workspace_rule())
+print("*********************************")
